@@ -67,19 +67,19 @@ userSchema.pre('save', function (next) {
   next()
 })
 
-// userSchema.pre('findOneAndUpdate', function (next) {
-//   const user = this._update
-//   if (user.password) {
-//     if (user.password.length >= 4 && user.password.length <= 20) {
-//       user.password = md5(user.password)
-//     } else {
-//       const error = new mongoose.Error.ValidationError(null)
-//       error.addError('password', new mongoose.Error.ValidatorError({ message: '密碼長度錯誤' }))
-//       next(error)
-//       return
-//     }
-//   }
-//   next()
-// })
+userSchema.pre('findOneAndUpdate', function (next) {
+  const user = this._update
+  if (user.password) {
+    if (user.password.length >= 4 && user.password.length <= 20) {
+      user.password = md5(user.password)
+    } else {
+      const error = new mongoose.Error.ValidationError(null)
+      error.addError('password', new mongoose.Error.ValidatorError({ message: '密碼長度錯誤' }))
+      next(error)
+      return
+    }
+  }
+  next()
+})
 
 export default mongoose.model('users', userSchema)

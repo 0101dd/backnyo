@@ -1,5 +1,5 @@
-// import md5 from 'md5'
-// import jwt from 'jsonwebtoken'
+import md5 from 'md5'
+import jwt from 'jsonwebtoken'
 import users from '../models/users.js'
 
 export const register = async (req, res) => {
@@ -16,5 +16,29 @@ export const register = async (req, res) => {
     } else {
       res.status(500).send({ success: false, message: '伺服器錯誤' })
     }
+  }
+}
+
+export const login = async (req, res) => {
+  try {
+    const user = await users.findOne(
+      { account: req.body.account, password: md5(req.body.password) },
+      '-password'
+    )
+    if (user) {
+      const token = jwt.sign({ _id: user._id.toString() }, process.env.SECRET, { expiresIn: '7 days' })
+      user.tokens.push(token)
+      await user.save()
+      const result = user.toObject()
+      delete result.tokens
+      result.token = token
+      result.cart = result.cart.length
+      res.status(200).send({ success: true, message: '', result })
+    } else {
+      res.status(404).send({ success: false, message: '帳號或密碼錯誤' })
+    }
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({ success: false, message: '伺服器錯誤' })
   }
 }
