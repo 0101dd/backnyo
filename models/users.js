@@ -49,7 +49,11 @@ const userSchema = new mongoose.Schema({
   },
   image: {
     type: String
-  }
+  },
+  que: [
+    { question: { type: String } },
+    { answer: { type: String } }
+  ]
 }, { versionKey: false })
 
 userSchema.pre('save', function (next) {
