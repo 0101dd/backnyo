@@ -7,6 +7,6 @@ const questionSchema = new mongoose.Schema({
   answer: {
     type: String
   }
-})
+}, { versionKey: false })
 
-export default mongoose.model('question', questionSchema)
+export default mongoose.model('questions', questionSchema)
