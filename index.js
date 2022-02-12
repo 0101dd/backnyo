@@ -3,7 +3,7 @@ import express from 'express'
 import mongoose from 'mongoose'
 import cors from 'cors'
 import usersRouter from './routes/users.js'
-import questionsRouter from './routers/questions.js'
+import questionsRouter from './routes/questions.js'
 
 mongoose.connect(process.env.DB_URL, () => {
   console.log('MongoDB Connected')
