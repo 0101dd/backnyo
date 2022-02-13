@@ -52,3 +52,36 @@ export const logout = async (req, res) => {
     res.status(500).send({ success: false, message: '伺服器錯誤' })
   }
 }
+
+export const extend = async (req, res) => {
+  try {
+    const idx = req.user.tokens.findIndex(token => token === req.token)
+    const token = jwt.sign({ _id: req.user._id.toString() }, process.env.SECRET, { expiresIn: '7 days' })
+    req.user.tokens[idx] = token
+    req.user.markModified('tokens')
+    await req.user.save()
+    res.status(200).send({ success: true, message: '', result: { token } })
+  } catch (error) {
+    res.status(500).send({ success: false, message: '伺服器錯誤' })
+  }
+}
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const result = await users.find()
+    res.status(200).send({ success: true, message: '', result })
+  } catch (error) {
+    res.status(500).send({ success: false, message: '伺服器錯誤' })
+  }
+}
+
+export const getUserInfo = async (req, res) => {
+  try {
+    const result = req.user.toObject()
+    delete result.tokens
+    result.cart = result.cart.length
+    res.status(200).send({ success: true, message: '', result })
+  } catch (error) {
+    res.status(500).send({ success: false, message: '伺服器錯誤' })
+  }
+}
