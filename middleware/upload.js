@@ -31,9 +31,9 @@ export default async (req, res, next) => {
       } else if (error.code === 'LIMIT_FORMAT') {
         message = '上傳錯誤'
       }
-      res.stauts(400).send({ success: false, message })
+      res.status(400).send({ success: false, message })
     } else if (error) {
-      res.stauts(500).send({ success: false, message: '伺服器錯誤' })
+      res.status(500).send({ success: false, message: '伺服器錯誤' })
     } else {
       next()
     }

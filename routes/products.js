@@ -9,7 +9,8 @@ import {
   getProducts,
   getAllProducts,
   getProductById,
-  updateProductById
+  updateProductById,
+  deleteProducts
 } from '../controllers/products.js'
 
 const router = express.Router()
@@ -19,5 +20,6 @@ router.get('/', getProducts)
 router.get('/all', auth, admin, getAllProducts)
 router.get('/:id', getProductById)
 router.patch('/:id', auth, admin, content('multipart/form-data'), upload, updateProductById)
+router.patch('/deleteProducts/:id', auth, admin, content('multipart/form-data'), upload, deleteProducts)
 
 export default router
