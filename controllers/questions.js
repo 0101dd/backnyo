@@ -1,8 +1,12 @@
 import questions from '../models/questions.js'
 
-export const createQuestion = async (req, res) => {
+export const create = async (req, res) => {
   try {
-    const result = await questions.create({ ...req.body })
+    const obj = req.body
+    if (req.file) {
+      obj.image = req.file.path
+    }
+    const result = await questions.create(obj)
     res.status(200).send({ success: true, message: '', result })
   } catch (error) {
     if (error.name === 'ValidationError') {
@@ -23,7 +27,7 @@ export const getAllQuestions = async (req, res) => {
   }
 }
 
-export const getQuestionId = async (req, res) => {
+export const getQuestionById = async (req, res) => {
   try {
     const result = await questions.findById(req.params.id)
     if (result) {
@@ -60,4 +64,20 @@ export const editQuestion = async (req, res) => {
     }
   }
 }
-// 1CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "questions"
+
+export const deleteQuestion = async (req, res) => {
+  try {
+    const result = await questions.findByIdAndRemove(req.params.id, { new: true })
+    res.status(200).send({ success: true, message: '刪除', result })
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      const key = Object.keys(error.errors)[0]
+      const message = error.errors[key].message
+      res.status(400).send({ success: false, message: message })
+    } else if (error.name === 'MongoError' && error.code === 11000) {
+      res.status(400).send({ success: false, message: '已存在' })
+    } else {
+      res.status(500).send({ success: false, message: '伺服器錯誤' })
+    }
+  }
+}
