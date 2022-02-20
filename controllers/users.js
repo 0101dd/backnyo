@@ -86,3 +86,64 @@ export const getUserInfo = async (req, res) => {
     res.status(500).send({ success: false, message: '伺服器錯誤' })
   }
 }
+
+export const getUerById = async (req, res) => {
+  try {
+    const result = await users.findById(req.params.id)
+    if (result) {
+      res.status(200).send({ success: true, message: '', result })
+    } else {
+      res.status(404).send({ success: false, message: '找不到;;' })
+    }
+  } catch (error) {
+    if (error.name === 'CastError') {
+      res.status(404).send({ success: false, message: '找不到;;' })
+    } else {
+      res.status(500).send({ success: false, message: '伺服器錯誤' })
+    }
+  }
+}
+
+export const updateUserById = async (req, res) => {
+  const data = {
+    nickName: req.body.nickName,
+    gender: req.body.gender,
+    age: req.body.age,
+    birthday: req.body.birthday,
+    address: req.body.address,
+    phone: req.body.phone
+  }
+  if (req.file) {
+    data.image = req.file.path
+  }
+  try {
+    const result = await users.findByIdAndUpdate(req.params.id, data, { new: true, runValidators: true })
+    res.status(200).send({ success: true, message: '', result })
+  } catch (error) {
+    if (error.name === 'CastError') {
+      res.status(404).send({ success: false, message: '找不到;;' })
+    } else if (error.name === 'ValidationError') {
+      const key = Object.keys(error.errors)[0]
+      res.status(400).send({ success: false, message: error.errors[key].message })
+    } else {
+      res.status(500).send({ success: false, message: '伺服器錯誤' })
+    }
+  }
+}
+
+export const deleteUserById = async (req, res) => {
+  try {
+    const result = await users.findByIdAndRemove(req.params.id, { new: true })
+    res.status(200).send({ success: true, message: '刪除', result })
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      const key = Object.keys(error.errors)[0]
+      const message = error.errors[key].message
+      res.status(400).send({ success: false, message: message })
+    } else if (error.name === 'MongoError' && error.code === 11000) {
+      res.status(400).send({ success: false, message: '已存在' })
+    } else {
+      res.status(500).send({ success: false, message: '伺服器錯誤' })
+    }
+  }
+}

@@ -43,12 +43,34 @@ const userSchema = new mongoose.Schema({
         quantity: {
           type: Number,
           required: [true, '缺少商品數量']
+        },
+        comment: {
+          type: String
         }
       }
     ]
   },
   image: {
     type: String
+  },
+  nickName: {
+    type: String
+  },
+  age: {
+    type: Number
+  },
+  birthday: {
+    type: String
+  },
+  address: {
+    type: String
+  },
+  phone: {
+    type: String,
+    minlength: [10, '少於 10 位數']
+  },
+  gender: {
+    type: Boolean
   }
 }, { versionKey: false })
 

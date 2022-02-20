@@ -5,6 +5,7 @@ import cors from 'cors'
 import usersRouter from './routes/users.js'
 import questionsRouter from './routes/questions.js'
 import productsRouter from './routes/products.js'
+import worksRouter from './routes/works.js'
 
 mongoose.connect(process.env.DB_URL, () => {
   console.log('MongoDB Connected')
@@ -34,6 +35,7 @@ app.use((_, req, res, next) => {
 app.use('/users', usersRouter)
 app.use('/questions', questionsRouter)
 app.use('/products', productsRouter)
+app.use('/works', worksRouter)
 
 app.all('*', (req, res) => {
   res.status(404).send({ success: false, message: '找不到' })
