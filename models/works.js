@@ -1,6 +1,10 @@
 import mongoose from 'mongoose'
 
 const workSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.ObjectId,
+    ref: 'users'
+  },
   name: {
     type: String,
     required: [true, '作品標題必填']

@@ -50,6 +50,9 @@ export const editQuestion = async (req, res) => {
       question: req.body.question,
       answer: req.body.answer
     }
+    if (req.file) {
+      data.image = req.file.path
+    }
     const result = await questions.findByIdAndUpdate(req.params.id, data, { new: true, runValidators: true })
     res.status(200).send({ success: true, message: '', result })
   } catch (error) {
