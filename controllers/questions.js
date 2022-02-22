@@ -2,11 +2,11 @@ import questions from '../models/questions.js'
 
 export const create = async (req, res) => {
   try {
-    const obj = req.body
-    if (req.file) {
-      obj.image = req.file.path
-    }
-    const result = await questions.create(obj)
+    // const obj = req.body
+    // if (req.file) {
+    //   obj.image = req.file.path
+    // }
+    const result = await questions.create({ ...req.body })
     res.status(200).send({ success: true, message: '', result })
   } catch (error) {
     if (error.name === 'ValidationError') {

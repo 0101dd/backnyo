@@ -74,7 +74,8 @@ export const updateWorkById = async (req, res) => {
   const data = {
     name: req.body.name,
     description: req.body.description,
-    show: req.body.show
+    show: req.body.show,
+    user: req.user._id
   }
 
   if (req.file) {
@@ -96,6 +97,7 @@ export const updateWorkById = async (req, res) => {
 }
 
 export const getMyWork = async (req, res) => {
+  console.log(req.user)
   try {
     const result = await works.find({ user: req.user._id })
     res.status(200).send({ success: true, message: '', result })
