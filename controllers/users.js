@@ -1,7 +1,7 @@
 import md5 from 'md5'
 import jwt from 'jsonwebtoken'
 import users from '../models/users.js'
-// import products from '../models/products.js'
+import products from '../models/products.js'
 
 export const register = async (req, res) => {
   try {
@@ -104,24 +104,23 @@ export const getUerById = async (req, res) => {
   }
 }
 
-export const updateUserById = async (req, res) => {
-  const data = {
-    nickName: req.body.nickName,
-    gender: req.body.gender,
-    age: req.body.age,
-    birthday: req.body.birthday,
-    address: req.body.address,
-    phone: req.body.phone
-  }
-  if (req.file) {
-    data.image = req.file.path
-  }
+export const addCart = async (req, res) => {
   try {
-    const result = await users.findByIdAndUpdate(req.params.id, data, { new: true, runValidators: true })
-    res.status(200).send({ success: true, message: '', result })
+    const idx = req.user.cart.findIndex(item => item.product.toString() === req.body.product)
+    if (idx > -1) {
+      req.user.cart[idx].quantity += req.body.quantity
+    } else {
+      const result = await products.findById(req.body.product)
+      if (!result || !result.sell) {
+        res.status(404).send({ success: false, message: '商品不存在' })
+      }
+      req.user.cart.push(req.body)
+    }
+    await req.user.save()
+    res.status(200).send({ success: true, message: '', result: req.user.cart.length })
   } catch (error) {
     if (error.name === 'CastError') {
-      res.status(404).send({ success: false, message: '找不到;;' })
+      res.status(404).send({ success: false, message: '找不到' })
     } else if (error.name === 'ValidationError') {
       const key = Object.keys(error.errors)[0]
       res.status(400).send({ success: false, message: error.errors[key].message })
@@ -131,19 +130,33 @@ export const updateUserById = async (req, res) => {
   }
 }
 
-export const deleteUserById = async (req, res) => {
+export const getCart = async (req, res) => {
   try {
-    const result = await users.findByIdAndRemove(req.params.id, { new: true })
-    res.status(200).send({ success: true, message: '刪除', result })
+    const { cart } = await users.findById(req.user._id, 'cart').populate('cart.product')
+    res.status(200).send({ success: true, message: '', result: cart })
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      const key = Object.keys(error.errors)[0]
-      const message = error.errors[key].message
-      res.status(400).send({ success: false, message: message })
-    } else if (error.name === 'MongoError' && error.code === 11000) {
-      res.status(400).send({ success: false, message: '已存在' })
+    res.status(500).send({ success: false, message: '伺服器錯誤' })
+  }
+}
+
+export const updateCart = async (req, res) => {
+  try {
+    if (req.body.quantity === 0) {
+      const idx = req.user.cart.findIndex(item => item.product.toString() === req.body.product)
+      if (idx > -1) {
+        req.user.cart.splice(idx, 1)
+      }
+      await req.user.save()
+      res.status(200).send({ success: true, message: '' })
     } else {
-      res.status(500).send({ success: false, message: '伺服器錯誤' })
+      const idx = req.user.cart.findIndex(item => item.product.toString() === req.body.product)
+      if (idx > -1) {
+        req.user.cart[idx].quantity = req.body.quantity
+      }
+      await req.user.save()
+      res.status(200).send({ success: true, message: '' })
     }
+  } catch (error) {
+    res.status(500).send({ success: false, message: '伺服器錯誤' })
   }
 }

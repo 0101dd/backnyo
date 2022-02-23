@@ -2,7 +2,7 @@ import express from 'express'
 import content from '../middleware/content.js'
 import auth from '../middleware/auth.js'
 // import admin from '../middleware/admin.js'
-import upload from '../middleware/upload.js'
+// import upload from '../middleware/upload.js'
 
 import {
   register,
@@ -11,9 +11,10 @@ import {
   logout,
   getAllUsers,
   getUserInfo,
-  getUerById,
-  updateUserById,
-  deleteUserById
+  addCart,
+  getCart,
+  updateCart,
+  getUerById
 } from '../controllers/users.js'
 const router = express.Router()
 
@@ -23,8 +24,9 @@ router.post('/extend', auth, extend)
 router.delete('/logout', auth, logout)
 router.get('/all', auth, getAllUsers)
 router.get('/me', auth, getUserInfo)
+router.post('/me/cart', auth, addCart)
+router.get('/me/cart', auth, getCart)
+router.patch('/me/cart', auth, updateCart)
 router.get('/:id', auth, getUerById)
-router.patch('/:id', auth, upload, content('multipart/form-data'), updateUserById)
-router.patch('/:id', auth, upload, content('multipart/form-data'), deleteUserById)
 
 export default router
