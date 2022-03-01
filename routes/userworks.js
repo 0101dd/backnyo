@@ -21,6 +21,6 @@ router.get('/all', auth, getAllWorks)
 router.get('/me', auth, getMyWork)
 router.get('/:id', getWorkById)
 router.patch('/:id', auth, content('multipart/form-data'), upload, updateWorkById)
-router.patch('/deleteProducts/:id', auth, content('multipart/form-data'), upload, deleteWorks)
+router.patch('/deleteWorks/:id', auth, content('multipart/form-data'), upload, deleteWorks)
 
 export default router
